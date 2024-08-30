@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscar Cliente por CPF</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+    <div class="flex h-screen">
+        <div class="w-64 bg-gray-800 text-white p-4">
+            <h2 class="text-2xl font-bold mb-4">Clientes</h2>
+            <ul>
+            <li class="mb-2">
+                <a href="listar.html" class="block py-2 px-4 hover:bg-gray-700">Listar</a>
+            </li>
+            <li class="mb-2">
+                <a href="cadastrar.html" class="block py-2 px-4 hover:bg-gray-700">Cadastrar</a>
+            </li>
+            <li class="mb-2">
+                <a href="buscar.html" class="block py-2 px-4 hover:bg-gray-700">Buscar por CPF</a>
+            </li>
+            <li class="mb-2">
+                <a href="modificar.html" class="block py-2 px-4 hover:bg-gray-700">Modificar</a>
+            </li>
+            <li>
+                <a href="deletar.html" class="block py-2 px-4 hover:bg-gray-700">Deletar</a>
+            </li>
+            </ul>
+        </div>
+
+    <div class="flex-1 p-8">
+      <h1 class="text-3xl font-bold mb-6">Buscar Cliente por CPF</h1>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="cpf">
+          Selecionar CPF
+        </label>
+        <select id="cpfDropdown" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          <option value="">Selecione um CPF</option> </select>
+      </div>
+
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" onclick="buscarCliente()">
+        Buscar
+      </button>
+
+      <div id="clienteInfo" class="mt-8"> </div>
+    </div>
+  </div>   
+
+  <script>
+    function carregarCpfs() {
+      fetch('localhost:3000/clientes', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        const dropdown = document.getElementById('cpfDropdown');
+        dropdown.innerHTML = '<option value="">Selecione um CPF</option>';
+
+        data.forEach(cliente => {
+          const option = document.createElement('option');
+          option.value = cliente.id;
+          option.textContent = cliente.cpf;
+          dropdown.appendChild(option);
+        });
+      })
+      .catch((error) => {
+        console.error('Erro:', error);
+        alert('Ocorreu um erro ao carregar os CPFs.');
+      });
+    }
+
+    function buscarCliente() {
+      const dropdown = document.getElementById('cpfDropdown');
+      const clienteId = dropdown.value;
+
+      if (!clienteId) {
+        alert('Por favor, selecione um CPF.');
+        return;
+      }
+
+      fetch(`localhost:3000/clientes/${clienteId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        const clienteInfo = document.getElementById('clienteInfo');
+        clienteInfo.innerHTML = `
+          <h2 class="text-2xl font-bold mb-4">Informações do Cliente</h2>
+          <p><strong>Nome:</strong> ${data.nome}</p>
+          <p><strong>CPF:</strong> ${data.cpf}</p>
+          <p><strong>Data de Nascimento:</strong> ${data.dataNascimento}</p>
+          <p><strong>E-mail:</strong> ${data.email}</p>
+        `;
+      })
+      .catch((error) => {
+        console.error('Erro:', error);
+        alert('Ocorreu um erro ao buscar o cliente.');
+      });
+    }
+
+    window.onload = carregarCpfs;
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modificar Cliente</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <div class="flex h-screen">
+    <div class="w-64 bg-gray-800 text-white p-4">
+        <h2 class="text-2xl font-bold mb-4">Clientes</h2>
+        <ul>
+          <li class="mb-2">
+              <a href="listar.html" class="block py-2 px-4 hover:bg-gray-700">Listar</a>
+            </li>
+            <li class="mb-2">
+              <a href="cadastrar.html" class="block py-2 px-4 hover:bg-gray-700">Cadastrar</a>
+            </li>
+            <li class="mb-2">
+              <a href="buscar.html" class="block py-2 px-4 hover:bg-gray-700">Buscar por CPF</a>
+            </li>
+            <li class="mb-2">
+              <a href="modificar.html" class="block py-2 px-4 hover:bg-gray-700">Modificar</a>
+            </li>
+            <li>
+              <a href="deletar.html" class="block py-2 px-4 hover:bg-gray-700">Deletar</a>
+            </li>
+        </ul>
+      </div>
+
+    <div class="flex-1 p-8">
+      <h1 class="text-3xl font-bold mb-6">Modificar Cliente</h1>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="cpfDropdown">
+          Selecionar Cliente
+        </label>
+        <select id="cpfDropdown" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          <option value="">Selecione um Cliente</option>
+        
+        </select>
+      </div>
+
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" onclick="editarCliente()">
+        Editar
+      </button>
+
+      <div id="clienteForm" class="mt-8 hidden">
+        <h2 class="text-2xl font-bold mb-4">Modificar Dados do Cliente</h2>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="nome">
+            Nome
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="nome" type="text">
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="cpf">
+            CPF
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="cpf" type="text">
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="dataNascimento">
+            Data de Nascimento
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="dataNascimento" type="date">
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+            E-mail
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="email">
+        </div>
+        <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" onclick="submeterAlteracoes()">
+          Submeter Alterações
+        </button>
+      </div>
+    </div>
+  </div>   
+
+  <script>
+    let clienteSelecionadoId = null;
+
+    function carregarClientes() {
+      fetch('localhost:3000/clientes', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        const dropdown = document.getElementById('cpfDropdown');
+        dropdown.innerHTML = '<option value="">Selecione um Cliente</option>'; // Limpa e adiciona a opção padrão
+
+        data.forEach(cliente => {
+          const option = document.createElement('option');
+          option.value = cliente.id;
+          option.textContent = `${cliente.nome} - ${cliente.cpf}`;
+          dropdown.appendChild(option);
+        });
+      })
+      .catch((error) => {
+        console.error('Erro:', error);
+        alert('Ocorreu um erro ao carregar os clientes.');
+      });
+    }
+
+    function editarCliente() {
+      const dropdown = document.getElementById('cpfDropdown');
+      clienteSelecionadoId = dropdown.value;
+
+      if (!clienteSelecionadoId) {
+        alert('Por favor, selecione um cliente.');
+        return;
+      }
+
+      fetch(`localhost:3000/clientes/${clienteSelecionadoId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('nome').value = data.nome;
+        document.getElementById('cpf').value = data.cpf;
+        document.getElementById('dataNascimento').value = data.dataNascimento;
+        document.getElementById('email').value = data.email;
+
+        document.getElementById('clienteForm').classList.remove('hidden');
+      })
+      .catch((error) => {
+        console.error('Erro:', error);
+        alert('Ocorreu um erro ao carregar os dados do cliente.');
+      });
+    }
+
+    function submeterAlteracoes() {
+      const nome = document.getElementById('nome').value;
+      const cpf = document.getElementById('cpf').value;
+      const dataNascimento = document.getElementById('dataNascimento').value;
+      const email = document.getElementById('email').value;
+
+      if (!nome || !cpf || !dataNascimento || !email) {
+        alert('Por favor, preencha todos os campos.');
+        return;
+      }
+
+      fetch(`localhost:3000/clientes/${clienteSelecionadoId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          nome: nome,
+          cpf: cpf,
+          dataNascimento: dataNascimento,
+          email: email
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert('Cliente atualizado com sucesso.');
+        document.getElementById('clienteForm').classList.add('hidden');
+        carregarClientes();
+      })
+      .catch((error) => {
+        console.error('Erro:', error);
+        alert('Ocorreu um erro ao atualizar o cliente.');
+      });
+    }
+
+    window.onload = carregarClientes;
+  </script>
+
+</body>
+</html>

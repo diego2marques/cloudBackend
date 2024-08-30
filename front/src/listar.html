@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listagem de Clientes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <div class="flex h-screen">
+    <div class="w-64 bg-gray-800 text-white p-4">
+      <h2 class="text-2xl font-bold mb-4">Clientes</h2>
+      <ul>
+        <li class="mb-2">
+            <a href="listar.html" class="block py-2 px-4 hover:bg-gray-700">Listar</a>
+          </li>
+          <li class="mb-2">
+            <a href="cadastrar.html" class="block py-2 px-4 hover:bg-gray-700">Cadastrar</a>
+          </li>
+          <li class="mb-2">
+            <a href="buscar.html" class="block py-2 px-4 hover:bg-gray-700">Buscar por CPF</a>
+          </li>
+          <li class="mb-2">
+            <a href="modificar.html" class="block py-2 px-4 hover:bg-gray-700">Modificar</a>
+          </li>
+          <li>
+            <a href="deletar.html" class="block py-2 px-4 hover:bg-gray-700">Deletar</a>
+          </li>
+      </ul>
+    </div>
+
+    <div class="flex-1 p-8">
+      <h1 class="text-3xl font-bold mb-6">Lista de Clientes</h1>
+
+      <table class="min-w-full bg-white">
+        <thead>
+          <tr>
+            <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 text-gray-600 font-semibold uppercase tracking-wider">Nome</th>
+            <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 text-gray-600 font-semibold uppercase tracking-wider">CPF</th>
+            <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 text-gray-600 font-semibold uppercase tracking-wider">Data de Nascimento</th>
+            <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 text-gray-600 font-semibold uppercase tracking-wider">E-mail</th>
+          </tr>
+        </thead>
+        <tbody id="clientesTabela"> </tbody>
+      </table>
+    </div>
+  </div>   
+
+  <script>
+    function listarClientes() {
+      fetch('localhost:3000/clientes', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        const tabela = document.getElementById('clientesTabela');
+        tabela.innerHTML = '';
+
+        data.forEach(cliente => {
+          const row = document.createElement('tr');
+
+          row.innerHTML = `
+            <td class="py-2 px-4 border-b border-gray-200">${cliente.nome}</td>
+            <td class="py-2 px-4 border-b border-gray-200">${cliente.cpf}</td>
+            <td class="py-2 px-4 border-b border-gray-200">${cliente.dataNascimento}</td>
+            <td class="py-2 px-4 border-b border-gray-200">${cliente.email}</td>
+          `;
+
+          tabela.appendChild(row);
+        });
+      })
+      .catch((error) => {
+        console.error('Erro:', error);
+        alert('Ocorreu um erro ao carregar os clientes.');
+      });
+    }
+
+    window.onload = listarClientes;
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Clientes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <div class="flex h-screen">
+    <div class="w-64 bg-gray-800 text-white p-4">
+      <h2 class="text-2xl font-bold mb-4">Clientes</h2>
+      <ul>
+        <li class="mb-2">
+          <a href="listar.html" class="block py-2 px-4 hover:bg-gray-700">Listar</a>
+        </li>
+        <li class="mb-2">
+          <a href="cadastrar.html" class="block py-2 px-4 hover:bg-gray-700">Cadastrar</a>
+        </li>
+        <li class="mb-2">
+          <a href="buscar.html" class="block py-2 px-4 hover:bg-gray-700">Buscar por CPF</a>
+        </li>
+        <li class="mb-2">
+          <a href="modificar.html" class="block py-2 px-4 hover:bg-gray-700">Modificar</a>
+        </li>
+        <li>
+          <a href="deletar.html" class="block py-2 px-4 hover:bg-gray-700">Deletar</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="flex-1 p-8">
+      <h1 class="text-3xl font-bold mb-6">Cadastro de Cliente</h1>
+
+      <form id="cadastroForm" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="nome">
+            Nome
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="nome" type="text" placeholder="Nome completo do cliente">
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="cpf">
+            CPF
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="cpf" type="text" placeholder="CPF">
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="dataNascimento">
+            Data de Nascimento
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="dataNascimento" type="date">
+        </div>
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+            E-mail
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="email" placeholder="e-mail">
+        </div>
+        <div class="flex items-center justify-between">
+          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button" onclick="cadastrarCliente()">
+            Cadastrar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>   
+
+  <script>
+    function cadastrarCliente() {
+      const nome = document.getElementById('nome').value;
+      const cpf = document.getElementById('cpf').value;
+      const dataNascimento = document.getElementById('dataNascimento').value;
+      const email = document.getElementById('email').value;
+
+      const cliente = {
+        nome: nome,
+        cpf: cpf,
+        dataNascimento: dataNascimento,
+        email: email
+      };
+
+      fetch('localhost:3000/clientes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(cliente)
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Sucesso:', data);
+        alert('Cliente cadastrado com sucesso!');
+      })
+      .catch((error) => {
+        console.error('Erro:', error);
+        alert('Ocorreu um erro ao cadastrar o cliente.');
+      });
+    }
+  </script>
+
+</body>
+</html>

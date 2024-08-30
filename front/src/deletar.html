@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deletar Cliente</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <div class="flex h-screen">
+    <div class="w-64 bg-gray-800 text-white p-4">
+        <h2 class="text-2xl font-bold mb-4">Clientes</h2>
+        <ul>
+            <li class="mb-2">
+                <a href="listar.html" class="block py-2 px-4 hover:bg-gray-700">Listar</a>
+            </li>
+            <li class="mb-2">
+                <a href="cadastrar.html" class="block py-2 px-4 hover:bg-gray-700">Cadastrar</a>
+            </li>
+            <li class="mb-2">
+                <a href="buscar.html" class="block py-2 px-4 hover:bg-gray-700">Buscar por CPF</a>
+            </li>
+            <li class="mb-2">
+                <a href="modificar.html" class="block py-2 px-4 hover:bg-gray-700">Modificar</a>
+            </li>
+            <li>
+                <a href="deletar.html" class="block py-2 px-4 hover:bg-gray-700">Deletar</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="flex-1 p-8">
+      <h1 class="text-3xl font-bold mb-6">Deletar Cliente</h1>
+
+      <table class="min-w-full bg-white">
+        <thead>
+          <tr>
+            <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm leading-4 font-medium text-gray-600 uppercase tracking-wider">Nome</th>
+            <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm leading-4 font-medium text-gray-600 uppercase tracking-wider">CPF</th>
+            <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm leading-4 font-medium text-gray-600 uppercase tracking-wider">Data de Nascimento</th>
+            <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm leading-4 font-medium text-gray-600 uppercase tracking-wider">E-mail</th>
+            <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm leading-4 font-medium text-gray-600 uppercase tracking-wider">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="clientesTable"> </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function carregarClientes() {
+      fetch('localhost:3000/clientes', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        const table = document.getElementById('clientesTable');
+        table.innerHTML = '';
+
+        data.forEach(cliente => {
+          const row = document.createElement('tr');
+
+          row.innerHTML = `
+            <td class="py-2 px-4 border-b border-gray-200">${cliente.nome}</td>
+            <td class="py-2 px-4 border-b border-gray-200">${cliente.cpf}</td>
+            <td class="py-2 px-4 border-b border-gray-200">${cliente.dataNascimento}</td>
+            <td class="py-2 px-4 border-b border-gray-200">${cliente.email}</td>
+            <td class="py-2 px-4 border-b border-gray-200">
+              <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" onclick="deletarCliente('${cliente.id}')">
+                Deletar
+              </button>
+            </td>
+          `;
+
+          table.appendChild(row);
+        });
+      })
+      .catch((error) => {
+        console.error('Erro:', error);
+        alert('Ocorreu um erro ao carregar os clientes.');
+      });
+    }
+
+    function deletarCliente(clienteId) {
+      if (!confirm('Tem certeza que deseja deletar este cliente?')) {
+        return;
+      }
+
+      fetch(`localhost:3000/clientes/${clienteId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Cliente deletado com sucesso.');
+          carregarClientes();
+        } else {
+          alert('Erro ao deletar o cliente.');
+        }
+      })
+      .catch((error) => {
+        console.error('Erro:', error);
+        alert('Ocorreu um erro ao deletar o cliente.');
+      });
+    }
+
+    window.onload = carregarClientes;
+  </script>
+
+</body>
+</html>
